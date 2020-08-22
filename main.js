@@ -54,6 +54,7 @@ setupChart = () => {
             
             let graphData = graphHeaders.concat(dateNumArray.reverse());
             var data = google.visualization.arrayToDataTable(graphData);
+            console.log("DATA IS: " + completeTable);
             drawChart(data);
             resolve(true);
         });
@@ -63,7 +64,7 @@ setupChart = () => {
 sumSimilar = (array, elementKey) => {
     let sumArray = [];
     monthMap = getMonthMap();
-    for(let i = 0; i < 60;){
+    for(let i = 0; i < array.length;){
         let count = 0;
         let element = [];
         date = array[i][elementKey];
@@ -73,11 +74,17 @@ sumSimilar = (array, elementKey) => {
         while(newDate == date){
             count ++;
             i++;
-            newDate = array[i][elementKey];
+            if (i < array.length){
+                newDate = array[i][elementKey];
+            }else{
+                break;
+            }
         };
 
         element.push(count);
         
+        console.log("ELEMENT: " + element)
+
         //Format date into mm/dd
         element[0] = formatDate(element[0], monthMap);
 
@@ -90,9 +97,10 @@ getMonthMap = () => {
     let monthToNum = new Map();
     const month = [
         'January', 'Feburary', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'];
-    for(let i = 1; i < month.length; i++){
-        monthToNum.set(month[i], i);
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    for(let i = 0; i < month.length; i++){
+        monthToNum.set(month[i], i+1);
     }
     return monthToNum;
 }
@@ -109,19 +117,12 @@ formatDate = (dateTxt, monthMap) => {
 
 // Draw the chart and set the chart values
 function drawChart(data) {
-    
-
     var options = {
         titlePosition: 'none',
-        fontSize: 30,
-        titleTextStyle: {
-            color: '#B3A369',
-            size: '100px'
-        },
+        fontSize: 18,
         legend: 'none',
         colors:  ['#B3A369'],
         bar: { groupWidth: "90%" },
-
         lineWidth: 10,
     };
 

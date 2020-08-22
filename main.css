@@ -11,15 +11,16 @@ a{
     color: #004F9F;
     text-decoration: none;
 }
+
 a:hover{
     color: #1879DB;
 }
+
 
 button{
     width:50%;
     margin-left: 25%;
     margin-right: 25%;
-    margin-bottom: 2%;
 
     background-color: rgb(92, 91, 91);
     border: none;
@@ -28,14 +29,12 @@ button{
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
     font-size: 4rem;
     transition-duration: 0.2s;
 }
 
 .title, .explanation{
     text-align: center;
-    
 }
 
 .title{
@@ -52,21 +51,48 @@ button{
 }
 
 #graphbox{
-    position: absolute;
     width: 100%;
-    z-index: -1;
-    margin: -7vh auto;
-    padding: 0;
+    padding-top: 0;
+    margin-bottom: 0;
 }
 
-#graph{
+.graph{
     width: 100%;
     margin: 0 auto;
-    height: 70rem;
+    height: 30rem;
+    display: fixed;
+    z-index: -1;
+    padding-top: 0;
 }
 
-body{
-    padding-top: 0rem;
+html, body {
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+}
+.content {
+    flex: 1 0 auto;
+    padding-bottom: 10%;
+}
+
+footer {
+    flex-shrink: 0;
+    color: #004F9F;
+    text-decoration: none;
+    font-size: 2rem;
+    text-align: center;
+    width: 100%;
+    padding: 1rem;
+}
+
+footer hr{
+    width: 90%;
+    height: .5em;
+    color:#555;
+    background-color:#111;
+    border-radius: 10px;
 }
 
 @media only screen and (min-width: 1000px) {
