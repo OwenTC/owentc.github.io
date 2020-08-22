@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="main.css">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
+        <link rel="shortcut icon" href="favicon.png" type="image/vnd.microsoft.icon" />
+        <title>GT Covid Grapher</title>
+    </head>
+    <body>
+        </iframe>
+        <div class = "title">
+            <h2 id = "unofficial"><strong>UNOFFICIAL</strong></h1>            
+            <h1>GaTech Covid-19 Graph</h1>
+        </div>
+        <p class = "explanation">
+            This is a graph of the reported cases at Georgia Tech. 
+            <strong>NOTE: this is NOT official and might not be accurate</strong>.
+            This is updated from the Georgia Tech health-alerts
+            <a class = "link" href = "https://health.gatech.edu/coronavirus/health-alerts">webpage</a>.
+            To be gauranteed the most up to date information,
+             visit that page.
+        </p>
+        <div id="graphbox">
+            <div id="graph"></div>
+            <button id="updateData" class= "button">Update Data</button>
+        </div>
+    </body>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js "></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> 
+    <script type="text/javascript" src = "main.js"></script> 
+</html>
