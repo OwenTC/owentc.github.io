@@ -1,5 +1,5 @@
-
-
+const manualOveride = new Map;
+manualOveride.set('8/22', 33);
 
 $(function(){
     setupPage();
@@ -54,7 +54,6 @@ setupChart = () => {
             
             let graphData = graphHeaders.concat(dateNumArray.reverse());
             var data = google.visualization.arrayToDataTable(graphData);
-            console.log("DATA IS: " + completeTable);
             drawChart(data);
             resolve(true);
         });
@@ -83,10 +82,14 @@ sumSimilar = (array, elementKey) => {
 
         element.push(count);
         
-        console.log("ELEMENT: " + element)
-
         //Format date into mm/dd
         element[0] = formatDate(element[0], monthMap);
+        
+        console.log("Element " + element[0])
+        if (manualOveride.has(element[0])){
+            console.log("FOUND DATE !!!!!!!!!!!!!!!!!!")
+            element[1] = manualOveride.get(element[0]);
+        }
 
         sumArray.push(element);
     }
@@ -108,10 +111,9 @@ getMonthMap = () => {
 formatDate = (dateTxt, monthMap) => {
     const regex = /([A-Z][a-z]*)([0-9]*)/i
     monthDay = dateTxt.match(regex)
-    
-    const month = monthMap.get(monthDay[1]);
 
-    console.log(monthDay[1] + "/" + monthDay[2]);
+    const month = monthMap.get(monthDay[1]);
+    
     return (month + "/" + monthDay[2]);
 }
 
