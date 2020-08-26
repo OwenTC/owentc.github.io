@@ -1,5 +1,8 @@
+"#!use strict";
+
 const manualOveride = new Map;
 manualOveride.set('8/22', 33);
+const totalDisplayedDates = 20;
 
 $(function(){
     setupPage();
@@ -23,9 +26,10 @@ setupPage = () => {
     // Load google charts
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(setupChart);
-    $("#updateMsg").hide();
 }
 
+//Gets and parses data from the GaTech health page
+//parses the data, then sends it to the array.
 setupChart = () => {
     return new Promise((resolve,reject) => {
         const graphHeaders = [['Date', 'Number of Cases']];
@@ -34,68 +38,88 @@ setupChart = () => {
 
             resContent = res.contents;
 
-            //Find all of the data
-            const startKey = "<h5>Campus Impact</h5>\\n\\t\\t\\t</th>\\n\\t\\t</tr>\\n\\t</thead>\\n\\t<tbody>"; //<h5>Campus Impact</h5>\n\t\t\t</th>\n\t\t</tr>\n\t</thead>\n\t
-            const endKey = "</tbody>"; //\n\n<p class=\"cutline-text\"><strong>
-            const endExp = new RegExp(`${endKey}`, 'i')
-            const startExp = new RegExp(`${startKey}`, 'i')
-            resContent = resContent.slice(startExp.exec(resContent).index)
-            resContent = resContent.slice(/<tbody>/i.exec(resContent).index + 8, endExp.exec(resContent).index);
+            //Find data with unique start key from webpage
+            const startKey = "<h5>Campus Impact</h5>\\n\\t\\t\\t</th>\\n\\t\\t</tr>\\n\\t</thead>\\n\\t<tbody>";
+            const startExp = new RegExp(`${startKey}`, 'i');
+            //Delete all values before the startExp
+            resContent = resContent.slice(startExp.exec(resContent).index);
 
-            //Convert string of data into an array
-            const completeTable = $(resContent.replace(/\s/g,'')).get().map(function(row) {
-                return $(row).find('td').get().map(function(cell) {
-                return $(cell).html();
+            const tableStart = /<tbody>/i.exec(resContent).index + 8;
+            const tableEnd = /<\/tbody>/i.exec(resContent).index;
+            //Set content equal to table content
+            resContent = resContent.slice(tableStart, tableEnd);
+
+            //Convert string of data into an array after removing all whitespace "\s"
+            const completeTable = 
+                $(resContent.replace(/\s/g,'')).get().map(function(row) {
+                    return $(row).find('td').get().map(function(cell) {
+                    return $(cell).html();
+                    });
                 });
-            });
             
-            //Create Array of Dates and # of cases
-            dateNumArray = sumSimilar(completeTable, 0)
+            //Create Array of Dates and # of cases with reversed to go from earliest to latest date
+
+            dateNumArray = sumSimilar((completeTable), 0, totalDisplayedDates);
             
-            let graphData = graphHeaders.concat(dateNumArray.reverse());
-            var data = google.visualization.arrayToDataTable(graphData);
+            //Create chart data
+            const data = google.visualization.arrayToDataTable(
+                graphHeaders.concat(dateNumArray.reverse())
+            );
+
+            //Draw the chart with given paramaters
             drawChart(data);
-            resolve(true);
+
+            //Return that the data was successfully aquired
+            resolve();
         });
     });
 }
 
-sumSimilar = (array, elementKey) => {
-    let sumArray = [];
-    monthMap = getMonthMap();
-    for(let i = 0; i < array.length;){
+//This function adds together the matching dates, returning an array
+//with dates and number of cases
+sumSimilar = (array, searchKey, max) => {
+    const monthMap = getMonthMap(); //Map of month names to numbers
+    let finalSummedArray = []; //Array with searchKeys and number of that element
+    
+    //Iterate through all elements in array or until it reaches the max number to return
+    for(let i = 0; i < array.length && finalSummedArray.length < max;){
         let count = 0;
         let element = [];
-        date = array[i][elementKey];
-        element.push(date);
-        newDate = array[i][elementKey];
+        let date = array[i][searchKey]; 
+        let newDate = date;
+
+        element.push(date); //Add date to element
+       
         
+        //For each date, itterate until that date changes adding up each occurence
         while(newDate == date){
             count ++;
             i++;
-            if (i < array.length){
-                newDate = array[i][elementKey];
-            }else{
+            if (i < array.length){ //Check if the array is still in bounds, 
+                newDate = array[i][searchKey];
+            }else{ //if not break
                 break;
             }
         };
 
+        //Add the count to the element
         element.push(count);
         
         //Format date into mm/dd
         element[0] = formatDate(element[0], monthMap);
         
-        console.log("Element " + element[0])
+        //Check manual overide for incorrect counts
         if (manualOveride.has(element[0])){
-            console.log("FOUND DATE !!!!!!!!!!!!!!!!!!")
             element[1] = manualOveride.get(element[0]);
         }
 
-        sumArray.push(element);
+        finalSummedArray.push(element); //Add [searchKey, number] to array
     }
-    return sumArray;
+    return finalSummedArray;
 }
 
+//Creates a map of Months to numbers. 
+//i.e: January:1, Feburary:2 ... December:12
 getMonthMap = () => {
     let monthToNum = new Map();
     const month = [
@@ -108,17 +132,21 @@ getMonthMap = () => {
     return monthToNum;
 }
 
+//Formats date by searching for month in map and retuning
+//monthnum/monthday
 formatDate = (dateTxt, monthMap) => {
-    const regex = /([A-Z][a-z]*)([0-9]*)/i
-    monthDay = dateTxt.match(regex)
-
-    const month = monthMap.get(monthDay[1]);
+    //Regex match the date with Month in group 1 and day in group 2
+    const regex = /([A-Z][a-z]*)([0-9]*)/i;
+    monthDay = dateTxt.match(regex);
     
+    //Search the month map for the date
+    const month = monthMap.get(monthDay[1]);
     return (month + "/" + monthDay[2]);
 }
 
 // Draw the chart and set the chart values
-function drawChart(data) {
+drawChart = (data) => {
+    //Set table style
     var options = {
         titlePosition: 'none',
         fontSize: 18,
