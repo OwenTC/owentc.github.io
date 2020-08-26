@@ -2,11 +2,12 @@
 
 const manualOveride = new Map;
 manualOveride.set('8/22', 33);
-const totalDisplayedDates = 20;
+const totalDisplayedDates = 30;
 
 $(function(){
     setupPage();
     
+    $("#caseDays").html(totalDisplayedDates);
     $("#updateData").hover(() => {
         $("#updateData").css("background-color", "#000");
     },() => {
@@ -15,7 +16,7 @@ $(function(){
     $("#updateData").click(function(){
         $("#updateData").css("background-color", "#FFF");
         setupChart().then((res,rej) => {
-            $("#updateData").css("background-color", " rgb(92, 91, 91)");
+            $("#updateData").css("background-color", "rgb(92, 91, 91)");
         });
     });
 
@@ -59,7 +60,12 @@ setupChart = () => {
             
             //Create Array of Dates and # of cases with reversed to go from earliest to latest date
 
-            dateNumArray = sumSimilar((completeTable), 0, totalDisplayedDates);
+            const sumCases = sumSimilar((completeTable), 0, totalDisplayedDates)
+            dateNumArray = sumCases.array;
+            totalCases = sumCases.total;
+            
+            //Display total cases:
+            $("#totalCases").html(totalCases);
             
             //Create chart data
             const data = google.visualization.arrayToDataTable(
@@ -80,7 +86,8 @@ setupChart = () => {
 sumSimilar = (array, searchKey, max) => {
     const monthMap = getMonthMap(); //Map of month names to numbers
     let finalSummedArray = []; //Array with searchKeys and number of that element
-    
+    let total = 0; //Total elements found up to max
+
     //Iterate through all elements in array or until it reaches the max number to return
     for(let i = 0; i < array.length && finalSummedArray.length < max;){
         let count = 0;
@@ -113,9 +120,11 @@ sumSimilar = (array, searchKey, max) => {
             element[1] = manualOveride.get(element[0]);
         }
 
+        total = i;
+        console.log(`total: ${total}`)
         finalSummedArray.push(element); //Add [searchKey, number] to array
     }
-    return finalSummedArray;
+    return {array: finalSummedArray, total: total};
 }
 
 //Creates a map of Months to numbers. 

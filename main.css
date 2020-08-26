@@ -68,6 +68,16 @@ button{
     padding-top: 0;
 }
 
+#totalCaseList{
+    padding: 0;
+    margin: 0;
+    margin-bottom: 2%;
+}
+
+num{
+    font-weight: bolder;
+}
+
 html, body {
     height: 100%;
 }
