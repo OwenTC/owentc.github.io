@@ -2,6 +2,7 @@
 
 const manualOveride = new Map;
 manualOveride.set('8/22', 33);
+manualOveride.set('8/27', 91);
 const totalDisplayedDates = 30;
 
 $(function(){
