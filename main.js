@@ -2,7 +2,6 @@
 
 const manualOveride = new Map;
 manualOveride.set('8/22', 33);
-manualOveride.set('8/27', 91);
 const totalDisplayedDates = 30;
 
 $(function(){
@@ -67,6 +66,13 @@ setupChart = () => {
             
             //Display total cases:
             $("#totalCases").html(totalCases);
+
+            //Display 7 Day Running Average
+            let dayTotal = 0;
+            for(let i = 0; i < 7; i++){
+                dayTotal += dateNumArray[i][1];
+            }
+            $("#average").html((dayTotal/7).toFixed(2));
             
             //Create chart data
             const data = google.visualization.arrayToDataTable(
@@ -85,36 +91,34 @@ setupChart = () => {
 //This function adds together the matching dates, returning an array
 //with dates and number of cases
 sumSimilar = (array, searchKey, max) => {
-    const monthMap = getMonthMap(); //Map of month names to numbers
     let finalSummedArray = []; //Array with searchKeys and number of that element
     let total = 0; //Total elements found up to max
 
     //Iterate through all elements in array or until it reaches the max number to return
-    for(let i = 0; i < array.length && finalSummedArray.length < max;){
+    let date = formatDate(array[0][searchKey]); 
+    let newDate = date;
+    for(let i = 0; i < array.length && finalSummedArray.length < max; date = newDate){
         let count = 0;
         let element = [];
-        let date = array[i][searchKey]; 
-        let newDate = date;
-
-        element.push(date); //Add date to element
        
+        element.push(date); //Add date to element
         
         //For each date, itterate until that date changes adding up each occurence
-        while(newDate == date){
+        while(date == newDate){
             count ++;
             i++;
             if (i < array.length){ //Check if the array is still in bounds, 
-                newDate = array[i][searchKey];
+                if(array[i][searchKey] != array[i-1][searchKey]){
+                    newDate = formatDate(array[i][searchKey]);
+                }
             }else{ //if not break
                 break;
             }
         };
-
+        
+    
         //Add the count to the element
         element.push(count);
-        
-        //Format date into mm/dd
-        element[0] = formatDate(element[0], monthMap);
         
         //Check manual overide for incorrect counts
         if (manualOveride.has(element[0])){
@@ -123,8 +127,11 @@ sumSimilar = (array, searchKey, max) => {
 
         total = i;
         console.log(`total: ${total}`)
-        finalSummedArray.push(element); //Add [searchKey, number] to array
+
+        finalSummedArray.push(element) 
+        
     }
+    //Combine Possible Duplicates
     return {array: finalSummedArray, total: total};
 }
 
@@ -144,14 +151,21 @@ getMonthMap = () => {
 
 //Formats date by searching for month in map and retuning
 //monthnum/monthday
-formatDate = (dateTxt, monthMap) => {
+formatDate = (dateTxt, monthMap = getMonthMap()) => {
     //Regex match the date with Month in group 1 and day in group 2
-    const regex = /([A-Z][a-z]*)([0-9]*)/i;
-    monthDay = dateTxt.match(regex);
+    const dateRegex = /([A-Z][a-z]*)([0-9]*)/i;
+    monthDay = dateTxt.match(dateRegex);
     
     //Search the month map for the date
     const month = monthMap.get(monthDay[1]);
     return (month + "/" + monthDay[2]);
+}
+
+lastInArray = (length) => {
+    if(length - 1 > 0 ){
+        return length
+    }
+    return 0;
 }
 
 // Draw the chart and set the chart values
