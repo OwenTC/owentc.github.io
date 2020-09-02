@@ -2,7 +2,7 @@
 
 const manualOveride = new Map;
 manualOveride.set('8/22', 33);
-const totalDisplayedDates = 30;
+const totalDisplayedDates = 20, displayedMonths = 2;
 
 $(function(){
     setupPage();
@@ -35,31 +35,32 @@ setupChart = () => {
     return new Promise((resolve,reject) => {
         const graphHeaders = [['Date', 'Number of Cases']];
 
-        $.get(`https://api.allorigins.win/get?url=${encodeURIComponent('https://health.gatech.edu/coronavirus/health-alerts')}`, (res) => {  
+        $.get(`https://api.allorigins.win/get?url=${encodeURIComponent('https://health.gatech.edu/coronavirus/health-alerts')}`, (res) => {
 
             resContent = res.contents;
 
-            //Find data with unique start key from webpage
-            const startKey = "<h5>Campus Impact</h5>\\n\\t\\t\\t</th>\\n\\t\\t</tr>\\n\\t</thead>\\n\\t<tbody>";
-            const startExp = new RegExp(`${startKey}`, 'i');
-            //Delete all values before the startExp
-            resContent = resContent.slice(startExp.exec(resContent).index);
 
-            const tableStart = /<tbody>/i.exec(resContent).index + 8;
-            const tableEnd = /<\/tbody>/i.exec(resContent).index;
-            //Set content equal to table content
-            resContent = resContent.slice(tableStart, tableEnd);
+            //Find data with unique start key from webpage
+            const startKey = "<h5>Campus Impact</h5>";
+            const startExp = new RegExp(`${startKey}`, 'i');
+
+            let resData = "";
+            for(let i = 0; i < displayedMonths; i++){
+                console.log(i);
+                resContent = resContent.slice(startExp.exec(resContent).index + 1);
+                thisMonthsData = getCovidTable(resContent);
+                resData += thisMonthsData;
+            }
 
             //Convert string of data into an array after removing all whitespace "\s"
             const completeTable = 
-                $(resContent.replace(/\s/g,'')).get().map(function(row) {
+                $(resData.replace(/\s/g,'')).get().map(function(row) {
                     return $(row).find('td').get().map(function(cell) {
                     return $(cell).html();
                     });
-                });
-            
-            //Create Array of Dates and # of cases with reversed to go from earliest to latest date
-
+                });            
+           
+                //Create Array of Dates and # of cases with reversed to go from earliest to latest date
             const sumCases = sumSimilar((completeTable), 0, totalDisplayedDates)
             dateNumArray = sumCases.array;
             totalCases = sumCases.total;
@@ -67,12 +68,14 @@ setupChart = () => {
             //Display total cases:
             $("#totalCases").html(totalCases);
 
-            //Display 7 Day Running Average
+            //Display 7 Day Running Average or Most dates possible
             let dayTotal = 0;
-            for(let i = 0; i < 7; i++){
+            let days = 0;
+            for(let i = 0; i < dateNumArray.length && i < 7; i++){
                 dayTotal += dateNumArray[i][1];
+                days++;
             }
-            $("#average").html((dayTotal/7).toFixed(2));
+            $("#average").html((dayTotal/days).toFixed(2));
             
             //Create chart data
             const data = google.visualization.arrayToDataTable(
@@ -86,6 +89,13 @@ setupChart = () => {
             resolve();
         });
     });
+}
+
+getCovidTable = (content) =>{
+    const tableStart = /<tbody>/i.exec(content).index + 8;
+    const tableEnd = /<\/tbody>/i.exec(content).index;
+
+    return content.slice(tableStart, tableEnd);
 }
 
 //This function adds together the matching dates, returning an array
