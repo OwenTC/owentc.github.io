@@ -1,37 +1,291 @@
+
 <!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" type="text/css" href="main.css">
-        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
-        <link rel="shortcut icon" href="favicon.png" type="image/vnd.microsoft.icon" />
-        <title>GT Covid Grapher</title>
-    </head>
-    <body>
-        <div class = "content">
-            <div class = "title">
-                <h2 id = "unofficial"><strong>UNOFFICIAL</strong></h1>            
-                <h1>GaTech Covid-19 Graph</h1>
-            </div>
-            <p class = "explanation">
-                This is a graph of the reported cases at Georgia Tech. 
-                <strong>NOTE: this is NOT official and might not be accurate</strong>.
-                This is updated from 
-                <a class = "link" href = "https://health.gatech.edu/coronavirus/health-alerts">Georgia Tech health-alerts</a>.
-                To be guaranteed the most up to date information, visit that page. <br>
-            </p>
-            <div id="graphbox">
-                <div id="graph" class="graph"></div>
-                <div class = "explanation" id = "totalCaseList">Cases in past <num id="caseDays"></num> Days: <num id = "totalCases"></num></div>
-                <div class = "explanation" id = "totalCaseList">7 Day Rolling Average: <num id = "average"></num></div>
-                <button id="updateData" class= "button">Update Data</button>
-                <div class="explanation">
-                    Learn more and contribute to this page on
-                    <a class = "link" href = "https://github.com/owentc/owentc.github.io">github</a>. 
-                </div>
-            </div>
-        </div>
-    </body>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js "></script>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> 
-    <script type="text/javascript" src = "main.js"></script> 
+   <head>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tangerine" />
+      <link rel="stylesheet" type="text/css" href="./index.css" />
+      
+      <script src="./cytoscape.min.js" defer></script>
+      <script src="index.js" defer></script>
+
+      <audio note="Bb4" src="./piano-mp3/Bb4.mp3"></audio>
+      <audio note="B4" src="./piano-mp3/B4.mp3"></audio>
+      <audio note="C5" src="./piano-mp3/C5.mp3"></audio>
+      <audio note="Db5" src="./piano-mp3/Db5.mp3"></audio>
+      <audio note="D5" src="./piano-mp3/Db5.mp3"></audio>
+      <audio note="Eb5" src="./piano-mp3/Db5.mp3"></audio>
+      <audio note="E5" src="./piano-mp3/E5.mp3"></audio>
+      <audio note="F5" src="./piano-mp3/F5.mp3"></audio>
+      <audio note="Gb5" src="./piano-mp3/Gb5.mp3"></audio>
+      <audio note="G5" src="./piano-mp3/G5.mp3"></audio>
+      <audio note="Ab5" src="./piano-mp3/Ab5.mp3"></audio>
+      <audio note="A5" src="./piano-mp3/A5.mp3"></audio>
+   </head>
+   <body>
+      <div id="nav">
+         <h1 id="one">BSM Math and Art Final</h1>
+         <button class="button-30" id="run_1">Cycle</button>
+         <button class="button-30" id="run_2">Tournament</button>
+         <button class="button-30" id="run_3">Peterson Graph</button>
+         <button class="button-30" id="run_4">Gaph 4</button>
+         <button class="button-30" id="run_5">Graph 5</button>
+      </div>
+      <div id="cy"></div>
+   </body>
+   
 </html>
+<!DOCTYPE>
+
+<!-- <html>
+
+	<head>
+		<title>cytoscape-automove.js demo</title>
+
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+		<script src="cytoscape.min.js"></script>
+
+		<style>
+			body {
+				font-family: helvetica neue, helvetica, liberation sans, arial, sans-serif;
+				font-size: 14px;
+			}
+
+			#cy {
+				position: absolute;
+				left: 0;
+				top: 0;
+				bottom: 0;
+				right: 0;
+				z-index: 999;
+			}
+
+			h1 {
+				opacity: 0.5;
+				font-size: 1em;
+				font-weight: bold;
+			}
+		</style>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function(){
+
+				var cy = window.cy = cytoscape({
+					container: document.getElementById('cy'),
+
+					layout: {
+						name: 'preset'
+					},
+
+					style: [
+						{
+							selector: 'node',
+							style: {
+								'label': 'data(id)'
+							}
+						},
+
+						{
+							selector: '.mid',
+							style: {
+								'width': 8,
+								'height': 8,
+								'label': ''
+							}
+						}
+					],
+
+					elements: [
+						{ data: { id: 'a' } },
+						{ data: { id: 'b' } },
+						{ data: { id: 'c' } },
+						{ data: { id: 'mid' }, classes: 'mid' },
+						{ data: { source: 'a', target: 'mid' } },
+						{ data: { source: 'b', target: 'mid' } },
+						{ data: { source: 'mid', target: 'c' } },
+
+						{ data: { id: 'd' } },
+
+						{ data: { id: 'e' } },
+						{ data: { id: 'f' } },
+						{ data: { source: 'e', target: 'f' } },
+
+						{ data: { id: 'g' } },
+
+						{ data: { id: 'h' } },
+						{ data: { id: 'i' } },
+						{ data: { source: 'h', target: 'i' } },
+
+						{ data: { id: 'j' } },
+
+						{ data: { id: 'k' } },
+						{ data: { id: 'm' } },
+						{ data: { id: 'n' } },
+						{ data: { source: 'k', target: 'm' } },
+						{ data: { source: 'k', target: 'n' } },
+						{ data: { source: 'm', target: 'n' } },
+					]
+				});
+
+				// cy.on('automove', function( evt ){
+				// 	var target = evt.target || evt.cyTarget; // 3.x || 2.x
+				//
+				// 	console.log('automove event on %s', target.id());
+				// });
+
+				// a, b, c; with mid in the middle
+
+				cy.$('#a, #b, #c').makeLayout({
+					name: 'circle',
+					boundingBox: {
+						x1: 0,
+						y1: 0,
+						x2: 300,
+						y2: 300
+					}
+				}).run();
+
+				cy.automove({
+					nodesMatching: cy.$('#mid'),
+					reposition: 'mean',
+					meanOnSelfPosition: function( node ){ return false; }
+				});
+
+				// dragging mid drags its neighbourhood with it
+				cy.automove({
+					nodesMatching: cy.$('#mid').neighbourhood().nodes(),
+					reposition: 'drag',
+					dragWith: cy.$('#mid')
+				});
+
+
+				// d can't go out of a box
+
+				cy.automove({
+					nodesMatching: cy.$('#d'),
+					reposition: { x1: 350, x2: 450, y1: 100, y2: 200 }
+				});
+
+				cy.$('#d').position({ x: 400, y: 150 });
+
+
+				// e & f have the same y
+
+				var eAndF = cy.$('#e, #f');
+
+				eAndF.makeLayout({
+					name: 'grid',
+					boundingBox: { x1: 0, x2: 300, y1: 300, y2: 400 },
+					cols: 2,
+					fit: false
+				}).run();
+
+				cy.automove({
+					nodesMatching: cy.$('#e, #f'),
+					reposition: function( node ){
+						var pos = node.position();
+
+						if( node.grabbed() ){ return pos; }
+
+						var otherNode = eAndF.not( node );
+
+						return {
+							x: pos.x,
+							y: otherNode.position('y')
+						};
+					},
+					when: 'matching'
+				});
+
+				// g kept in viewport
+
+				cy.$('#g').position({ x: 400, y: 350 });
+
+				cy.fit( 100 ); // make sure g is in the viewport for the demo
+
+				cy.automove({
+					nodesMatching: cy.$('#g'),
+					reposition: 'viewport'
+				});
+
+
+				// i gets pulled along with h on drag
+
+				cy.$('#h').position({ x: 585, y: 195 });
+				cy.$('#i').position({ x: 510, y: 260 });
+
+				cy.automove({
+					nodesMatching: cy.$('#i'),
+					reposition: 'drag',
+					dragWith: cy.$('#h')
+				});
+
+
+				// j can't go in the box of d
+
+				cy.$('#j').position({ x: 585, y: 350 });
+
+				cy.automove({
+					nodesMatching: cy.$('#j'),
+					reposition: { type: 'outside', x1: 350, x2: 450, y1: 100, y2: 200 }
+				});
+
+
+				// k, m, n all move together on drag as a unit (e.g. cluster)
+
+				cy.$('#k').position({ x: 430, y: -20 });
+				cy.$('#m').position({ x: 490, y: -110 });
+				cy.$('#n').position({ x: 550, y: -20 });
+
+				cy.automove({
+					nodesMatching: cy.$('#k, #m, #n'),
+					reposition: 'drag',
+					dragWith: cy.$('#k, #m, #n')
+				});
+
+				
+
+				cy.fit( 100 ); // fit to all the layouts
+
+
+				// .automove-viewport nodes kept in viewport (even if added after this call)
+				// convenient but less performant than `nodesMatching: collection`
+
+				cy.automove({
+					nodesMatching: '.automove-viewport',
+					reposition: 'viewport'
+				});
+
+				cy.on('tap', function( evt ){
+					var tgt = evt.target || evt.cyTarget; // 3.x || 2.x
+
+					if( tgt === cy ){
+						cy.add({
+							classes: 'automove-viewport',
+							data: { id: 'new' + Math.round( Math.random() * 100 ) },
+							position: {
+								x: evt.position.x,
+								y: evt.position.y
+							}
+						});
+					}
+				});
+
+				cy.on('cxttap', 'node', function( evt ){
+					var tgt = evt.target || evt.cyTarget; // 3.x || 2.x
+
+					tgt.remove();
+				});
+
+			});
+		</script>
+	</head>
+
+	<body>
+		<h1>cytoscape-automove demo</h1>
+
+		<div id="cy"></div>
+
+	</body>
+
+</html> -->
